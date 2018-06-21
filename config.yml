@@ -1,0 +1,119 @@
+# ----------------------------------------------------------------------
+# TUM Clinical pypes configuration parameters
+# ----------------------------------------------------------------------
+#Scanning was performed on an integrated Siemens Biograph mMR scanner that was capable of simultaneously
+#acquiring PET and MRI data using the vendor-supplied 12-channel phase-array head coil.
+#PET images, magnetization prepared rapid acquisition gradient echo (MP-RAGE) T1-weighted anatomical images and
+#T2*-weighted echoplanar imaging (EPI) MR data were acquired using the following scanning parameters:
+#PET: list-mode acquisition, 128 slices (gap, 0.5 mm) covering the whole brain; FOV, 450 mm; matrix size,
+#192x192; voxel size, 3.7x2.3x2.7 mm3; EPI: TR, 2.000 ms; TE, 30 ms/angle, 90°; 35 slices (gap, 0.6 mm)
+#aligned to AC/PC covering the whole brain; FOV, 192 mm; matrix size, 64x64; voxel size,
+#3.0x3.0x3.0 mm3 (each measurement consists of 300 acquisitions in interleaved mode with a total scan time of
+#10 min and 8 s); MP-RAGE: TR, 2.300 ms; TE, 2.98 ms; angle, 9°; 160 slices (gap, 0.5 mm) covering the whole brain;
+#FOV, 256 mm; matrix size, 256
+#256; voxel size, 1.0x1.0x1.0 mm3. The measurement has a total scan time of 5 min and 3 s. During the initial 4 min
+# of the design, we acquired arterial spin labeling data that were not analyzed for the current study
+
+## global configuration parameters
+spm_dir: "~/Software/matlab_tools/spm12"
+
+# anatomical image pre-processing
+normalize_atlas: True
+atlas_file: '' # this is being set from config.py
+
+# this is similar to the SPM+DiReCT method described here:
+# http://dx.doi.org/10.1016/j.nicl.2016.05.017
+anat_preproc.do_cortical_thickness: True
+
+# these are the KellyKapowski default parameters
+# also used in antsCorticalThickness
+direct.convergence: "[45,0.0,10]"
+direct.gradient_step: 0.025
+direct.smoothing_variance: 1.0
+direct.smoothing_velocity_field: 1.5
+direct.use_bspline_smoothing: False
+direct.number_integration_points: 10
+direct.thickness_prior_estimate: 10
+
+# If anat2pet is True, the registration process will be:
+# 1) anatomical to PET space,
+# 2) PET PVC in PET space,
+# 3) anatomical image in PET space to MNI (or group template), and
+# 4) apply the transformation from 3 to PET data.
+# Else, if anat2pet is False, the registration process will be:
+# 1) PET to anatomical space,
+# 2) PET PVC in anatomical space,
+# 3) pick the anatomical image to MNI transformation from the anatomical pipeline,
+# 4) apply the transformation from 3 to PET data in anatomical space.
+registration.anat2pet: False
+
+# If anat2fmri is True, the registration process will be:
+# 1) the anatomical image is co-registered to fMRI space,
+# 2) all the cleaning and resting-state processes in fMRI space,
+# 3) direct normalization of fMRI to MNI either through standard template or group template.
+# Else, if anat2fmri is False, the registration process will be:
+# 1) avg. fMRI to anatomical space,
+# 2) the anatomical image is co-registered to fMRI space,
+# 3) all the cleaning and resting-state processes in fMRI space,
+# 4) pick the anatomical image to MNI transformation from the anatomical pipeline,
+# 5) normalize fMRI to MNI using the anatomical to MNI transformation.
+registration.anat2fmri: False
+
+# DTI
+extract_b0.max_b: 0.0 # maximum b-value to be considered a b0, for brain mask calculation.
+dmri.artifact_detect: True # to compute motion statistics for post-hoc outliers exclusion.
+dmri.apply_nlmeans: True # to apply non-local means to the corrected DTI data.
+
+coreg_b0.write_interp: 3 # degree of b-spline used for interpolation
+nlmeans_denoise.N: 12 # number of channels in the head coil
+
+# Camino Tractography
+conmat.tract_stat: "mean"
+track.curvethresh: 50
+track.anisthresh: 0.2
+
+# REST
+coreg_rest.write_interp: 3 # degree of b-spline used for interpolation
+
+## the last volume index to discard from the timeseries. default: 0
+trim.begin_index: 5
+
+# bandpass filter frequencies in Hz.
+rest_input.lowpass_freq: 0.1 # the numerical upper bound
+rest_input.highpass_freq: 0.01 # the numerical lower bound
+
+# fwhm of smoothing kernel [mm]
+smooth_fmri.fwhm: 8
+
+## CompCor rsfMRI filters (at least compcor_csf should be True).
+rest_filter.compcor_csf: True
+rest_filter.compcor_wm: False
+rest_filter.gsr: False
+
+# filters parameters
+## the corresponding filter must be enabled for these.
+
+# motion regressors upto given order and derivative
+# motion + d(motion)/dt + d2(motion)/dt2 (linear + quadratic)
+motion_regressors.order: 0
+motion_regressors.derivatives: 1
+
+# number of polynomials to add to detrend
+motart_parameters.detrend_poly: 2
+
+# Compute TSNR on realigned data regressing polynomials up to order 2
+tsnr.regress_poly: 2
+
+# Threshold to use to detect motion-related outliers when composite motion is being used
+detect_artifacts.use_differences: [True, False]
+detect_artifacts.parameter_source: NiPy
+detect_artifacts.mask_type: file
+detect_artifacts.use_norm: True
+detect_artifacts.zintensity_threshold: 3
+detect_artifacts.norm_threshold: 1
+
+# Number of principal components to calculate when running CompCor. 5 or 6 is recommended.
+compcor_pars.num_components: 6
+
+# Number of principal components to calculate when running Global Signal Regression. 1 is recommended.
+gsr_pars.num_components: 1
