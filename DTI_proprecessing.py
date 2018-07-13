@@ -24,7 +24,7 @@ attach_functions = {"spm_fsl_dti_preprocessing": attach_spm_fsl_dti_preprocessin
 # the specific parts of the `data_crumb` that define a given modality.
 # **Note**: the key values of this `crumb_arguments` must be the same as expected
 # in the functions in `attach_functions`.
-crumb_arguments = {'dti': [('modality', 'DTIImg'),
+crumb_arguments = {'diff': [('modality', 'DTIImg'),
                             ('image',   'DTI.nii')],
                   }
 
