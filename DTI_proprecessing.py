@@ -14,11 +14,11 @@ MatlabCommand.set_default_paths('/usr/local/MATLAB/R2014a/toolbox/spm12')
 MatlabCommand.set_default_matlab_cmd("matlab -nodesktop -nosplash")
 # FreeSurfer - Specify the location of the freesurfer folder
 from nipype.interfaces.freesurfer import FSCommand
-fs_dir = '/media/data/louis/ProgramWorkResult/fMRItest/DTI/freesurfer'
+fs_dir = '/volume/DTI/freesurfer'
 FSCommand.set_default_subjects_dir(fs_dir)
 
 # root path to my data
-base_dir = "/media/data/louis/ProgramWorkResult/fMRItest/DTI/Data"
+base_dir = "/volume/DTI/Data"
 
 # the configuration file path
 config_file = os.path.join(os.path.dirname(base_dir), 'pypes_config.yml')
