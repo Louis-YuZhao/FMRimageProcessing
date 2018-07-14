@@ -29,6 +29,5 @@ wf = cobre_crumb_workflow(wf_name     = wf_name,
                           output_dir  = output_dir,
                           config_file = config_file
                          )
-
 # run it
 run_debug(wf, plugin='MultiProc', n_cpus=4)
